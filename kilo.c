@@ -13,6 +13,13 @@
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
+enum editor_key {
+    ARROW_LEFT = 1000,
+    ARROW_RIGHT,
+    ARROW_UP,
+    ARROW_DOWN
+};
+
 /*** data ***/
 
 struct editor_config {
@@ -54,13 +61,31 @@ void enable_raw_mode() {
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1) die ("tcsetattr");
 }
 
-char editor_read_key() {
+int editor_read_key() {
     int nread;
     char c;
     while ((nread = read(STDIN_FILENO, &c, 1)) != 1) {
         if (nread == -1 && errno != EAGAIN) die("read");
     }
-    return c;
+
+    if (c == '\x1b') {
+        char seq[3];
+        
+        if (read(STDIN_FILENO, &seq[0], 1) != 1) return '\x1b';
+        if (read(STDIN_FILENO, &seq[1], 1) != 1) return '\x1b';
+
+        if (seq[0] == '[') {
+            switch (seq[1]) {
+                case 'A': return ARROW_UP;
+                case 'B': return ARROW_DOWN;
+                case 'C': return ARROW_RIGHT;
+                case 'D': return ARROW_LEFT;
+            }
+        }
+        return '\x1b';
+    } else {
+        return c;
+    }
 }
 
 int get_cursor_position(int *rows, int *cols) {
@@ -165,25 +190,25 @@ void editor_refresh_screen() {
 
 /*** input ***/
 
-void editor_move_cursor(char key) {
+void editor_move_cursor(int  key) {
     switch (key) {
-        case 'a':
+        case ARROW_LEFT:
             E.cx--;
             break;
-        case 'd':
+        case ARROW_RIGHT:
             E.cx++;
             break;
-        case 'w':
+        case ARROW_UP:
             E.cy--;
             break;
-        case 's':
+        case ARROW_DOWN:
             E.cy++;
             break;
     }
 }
 
 void editor_process_keypress() {
-    char c = editor_read_key();
+    int c = editor_read_key();
     
     switch (c) {
         case CTRL_KEY('q'):
@@ -192,10 +217,10 @@ void editor_process_keypress() {
             exit(0);
             break;
         
-        case 'w':
-        case 'a':
-        case 's':
-        case 'd':
+        case ARROW_UP:
+        case ARROW_DOWN:
+        case ARROW_LEFT:
+        case ARROW_RIGHT:
             editor_move_cursor(c);
             break;
     }
