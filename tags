@@ -1,0 +1,36 @@
+ABUF_INIT	kilo.c	142
+ARROW_DOWN	kilo.c	20
+ARROW_LEFT	kilo.c	17
+ARROW_RIGHT	kilo.c	18
+ARROW_UP	kilo.c	19
+CTRL_KEY	kilo.c	/^#define CTRL_KEY(k) ((k) & 0x1f)$/
+E	kilo.c	34
+KILO_VERSION	kilo.c	12
+Mkilo	kilo.c	/^int main() {$/
+PAGE_DOWN	kilo.c	22
+PAGE_UP	kilo.c	21
+ab_append	kilo.c	/^void ab_append(struct abuf *ab, const char *s, int/
+ab_free	kilo.c	/^void ab_free(struct abuf *ab) {$/
+abuf	kilo.c	137
+b	kilo.c	138
+cx	kilo.c	28
+cy	kilo.c	28
+die	kilo.c	/^void die(const char *s) {$/
+disable_raw_mode	kilo.c	/^void disable_raw_mode() {$/
+editor_config	kilo.c	27
+editor_draw_rows	kilo.c	/^void editor_draw_rows(struct abuf *ab) {$/
+editor_key	kilo.c	16
+editor_move_cursor	kilo.c	/^void editor_move_cursor(int  key) {$/
+editor_process_keypress	kilo.c	/^void editor_process_keypress() {$/
+editor_read_key	kilo.c	/^int editor_read_key() {$/
+editor_refresh_screen	kilo.c	/^void editor_refresh_screen() {$/
+enable_raw_mode	kilo.c	/^void enable_raw_mode() {$/
+get_cursor_position	kilo.c	/^int get_cursor_position(int *rows, int *cols) {$/
+get_window_size	kilo.c	/^int get_window_size(int *rows, int *cols) {$/
+init_editor	kilo.c	/^void init_editor() {$/
+kilo	Makefile	/^kilo: kilo.c$/
+kilo	TAGS	2
+len	kilo.c	139
+orig_termios	kilo.c	31
+screencols	kilo.c	30
+screenrows	kilo.c	29
