@@ -43,7 +43,7 @@ struct editor_config {
     int screenrows;
     int screencols;
     int numrows;
-    erow row;
+    erow *row;
     struct termios orig_termios;
 };
 
@@ -165,6 +165,20 @@ int get_window_size(int *rows, int *cols) {
     }
 }
 
+/*** row operations ***/
+
+void editor_append_row(char *s, size_t len) {
+    E.row = realloc(E.row, sizeof(erow) * (E.numrows + 1));
+
+    int at = E.numrows;
+
+    E.row[at].size = len;
+    E.row[at].chars = malloc(len + 1);
+    memcpy(E.row[at].chars, s, len);
+    E.row[at].chars[len] = '\0';
+    E.numrows++;
+}
+
 /*** file i/o ***/
 
 void editor_open(char *filename) {
@@ -180,11 +194,7 @@ void editor_open(char *filename) {
                                line[linelen - 1] == '\r'))
             linelen--;
 
-        E.row.size = linelen;
-        E.row.chars = malloc(linelen + 1);
-        memcpy(E.row.chars, line, linelen);
-        E.row.chars[linelen] = '\0';
-        E.numrows = 1;
+        editor_append_row(line, linelen);
     }
     free(line);
     fclose(fp);
@@ -217,7 +227,7 @@ void editor_draw_rows(struct abuf *ab) {
     int y;
     for(y = 0; y < E.screenrows; y++) {
         if (y >= E.numrows) {
-            if (y == E.screenrows / 3) {
+            if (E.numrows == 0 && y == E.screenrows / 3) {
                 char welcome[80];
                 int welcomelen = snprintf(welcome, sizeof(welcome),
                                           "Kilo editor -- version %s", KILO_VERSION);
@@ -321,6 +331,7 @@ void init_editor() {
     E.cx = 0;
     E.cy = 0;
     E.numrows = 0;
+    E.row = NULL;
     if (get_window_size(&E.screenrows, &E.screencols) == -1) {
         die("get_window_size");
     }
