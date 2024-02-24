@@ -230,6 +230,12 @@ void editor_scroll() {
     if (E.cy >= E.rowoff + E.screenrows) {
         E.rowoff = E.cy - E.screenrows + 1;
     }
+    if (E.cx < E.coloff) {
+        E.coloff = E.cx;
+    }
+    if (E.cx >= E.coloff + E.screencols) {
+        E.coloff = E.cx - E.screencols + 1;
+    }
 }
 
 void editor_draw_rows(struct abuf *ab) {
@@ -253,9 +259,10 @@ void editor_draw_rows(struct abuf *ab) {
                 ab_append(ab, "~", 1);
             }
         } else {
-            int len = E.row[filerow].size;
+            int len = E.row[filerow].size - E.coloff;
+            if (len < 0) len = 0;
             if (len > E.screencols) len = E.screencols;
-            ab_append(ab, E.row[filerow].chars, len);
+            ab_append(ab, &E.row[filerow].chars[E.coloff], len);
         }
         ab_append(ab, "\x1b[K", 3);
         if (y < E.screenrows - 1) {
