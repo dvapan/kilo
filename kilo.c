@@ -40,6 +40,7 @@ typedef struct erow {
 
 struct editor_config {
     int cx, cy;
+    int rowoff;
     int screenrows;
     int screencols;
     int numrows;
@@ -189,7 +190,7 @@ void editor_open(char *filename) {
     size_t linecap = 0;
     ssize_t linelen;
     linelen = getline(&line, &linecap, fp);
-    if (linelen != -1) {
+    while ((linelen = getline(&line, &linecap, fp)) != -1) {
         while (linelen > 0 && (line[linelen - 1] == '\n' ||
                                line[linelen - 1] == '\r'))
             linelen--;
@@ -330,6 +331,7 @@ void editor_process_keypress() {
 void init_editor() {
     E.cx = 0;
     E.cy = 0;
+    E.rowoff = 0;
     E.numrows = 0;
     E.row = NULL;
     if (get_window_size(&E.screenrows, &E.screencols) == -1) {
