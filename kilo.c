@@ -189,12 +189,10 @@ void editor_open(char *filename) {
     char *line = NULL;
     size_t linecap = 0;
     ssize_t linelen;
-    linelen = getline(&line, &linecap, fp);
     while ((linelen = getline(&line, &linecap, fp)) != -1) {
         while (linelen > 0 && (line[linelen - 1] == '\n' ||
                                line[linelen - 1] == '\r'))
             linelen--;
-
         editor_append_row(line, linelen);
     }
     free(line);
@@ -273,7 +271,7 @@ void editor_refresh_screen() {
     ab_append(&ab, "\x1b[H", 3);
     editor_draw_rows(&ab);
     char buf[32];
-    snprintf(buf, sizeof(buf), "\x1b[%d;%dH", E.cy + 1, E.cx + 1);
+    snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (E.cy - E.rowoff) + 1, E.cx + 1);
     ab_append(&ab, buf, strlen(buf));
     ab_append(&ab, "\x1b[?25h",6);
     write(STDOUT_FILENO, ab.b, ab.len);
