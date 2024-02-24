@@ -224,6 +224,15 @@ void ab_free(struct abuf *ab) {
 
 /*** output ***/
 
+void editor_scroll() {
+    if (E.cy < E.rowoff) {
+        E.rowoff = E.cy;
+    }
+    if (E.cy >= E.rowoff + E.screenrows) {
+        E.rowoff = E.cy - E.screenrows + 1;
+    }
+}
+
 void editor_draw_rows(struct abuf *ab) {
     int y;
     for(y = 0; y < E.screenrows; y++) {
@@ -257,6 +266,8 @@ void editor_draw_rows(struct abuf *ab) {
 }
 
 void editor_refresh_screen() {
+    editor_scroll();
+
     struct abuf ab = ABUF_INIT;
     ab_append(&ab, "\x1b[?25l",6);
     ab_append(&ab, "\x1b[H", 3);
